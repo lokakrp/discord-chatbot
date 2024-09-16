@@ -1,11 +1,11 @@
 import random
 
-def get_responses(message: str) -> str:
+def get_response(message: str) -> str:
     p_message = message.lower().strip()  # Strip unnecessary whitespace and lowercase
 
     # Greeting
     if p_message in ["hello", "hi", "hey"]:
-        return random.choice(["Hi there!", "Hello!", "Hey! How's it going?", "Hi!"])
+        return random.choice(["hiii!", "hello!!", "heyy!!!", "hi!"])
 
     # Help command
     if p_message in ["!help", "help", "?"]:
@@ -14,7 +14,6 @@ def get_responses(message: str) -> str:
             "`hello`: Greet the bot\n"
             "`flip`: Flip a coin\n"
             "`rps`: Play Rock-Paper-Scissors\n"
-            "`choose <option1> or <option2>`: Randomly choose between two options\n"
             "`8ball`: Ask the Magic 8 Ball a question\n"
             "`quote`: Get an inspirational quote\n"
         )
@@ -34,14 +33,6 @@ def get_responses(message: str) -> str:
             return f"🎮 You chose {user_choice}, I chose {bot_choice}. {result}"
         else:
             return "Please choose `rock`, `paper`, or `scissors` by typing `rps <choice>`."
-
-    # Choose between two options
-    if " or " in p_message:
-        options = p_message.split(" or ")
-        if len(options) == 2:
-            return f"I choose: {random.choice(options).strip()}!"
-        else:
-            return "Please use the format `choose <option1> or <option2>`."
 
     # Magic 8 Ball
     if p_message == "8ball":
@@ -79,11 +70,10 @@ def check_rps_result(user_choice: str, bot_choice: str) -> str:
 
 # Example test cases
 if __name__ == "__main__":
-    print(get_responses("hello"))          # Random greeting
-    print(get_responses("flip"))           # Flip a coin
-    print(get_responses("rps rock"))       # Play rock-paper-scissors
-    print(get_responses("choose pizza or pasta"))  # Choose between two options
-    print(get_responses("8ball"))          # Magic 8 ball response
-    print(get_responses("quote"))          # Inspirational quote
-    print(get_responses("!help"))          # List of commands
-    print(get_responses("unknown"))        # Unknown command
+    print(get_response("hello"))          # Random greeting
+    print(get_response("flip"))           # Flip a coin
+    print(get_response("rps rock"))       # Play rock-paper-scissors
+    print(get_response("8ball"))          # Magic 8 ball response
+    print(get_response("quote"))          # Inspirational quote
+    print(get_response("!help"))          # List of commands
+    print(get_response("unknown"))        # Unknown command
