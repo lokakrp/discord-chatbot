@@ -11,7 +11,7 @@ TOKEN = config['discord']['token'].strip()
 # Create a bot instance with the commands extension
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix='?', intents=intents)
+bot = commands.Bot(command_prefix='!', intents=intents)  # Changed prefix to '!'
 
 # Load the DJ cog
 async def load_extensions():
@@ -27,17 +27,19 @@ async def on_ready():
 async def on_message(message):
     if message.author == bot.user:
         return
-    
+
     username = str(message.author)
     user_message = str(message.content)
     channel = str(message.channel)
 
     print(f'{username} said: "{user_message}" ({channel})')
 
-    if user_message.startswith("?"):
-        user_message = user_message[1:]
+    if isinstance(message.channel, discord.DMChannel):
+        # Respond to any message in private messages
         await send_message(message, user_message, is_private=True)
-    else:
+    elif user_message.startswith("!"):
+        # Respond to messages starting with '!' in server channels
+        user_message = user_message[1:]
         await send_message(message, user_message, is_private=False)
 
 # Send messages with response handling
