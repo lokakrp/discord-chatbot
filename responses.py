@@ -11,11 +11,20 @@ def get_response(message: str) -> str:
     if p_message in ["!help", "help", "?"]:
         return (
             "`Commands list:`\n"
+            "[chatbot]\n"
             "`hello`: Greet the bot\n"
             "`flip`: Flip a coin\n"
             "`rps`: Play Rock-Paper-Scissors\n"
             "`8ball`: Ask the Magic 8 Ball a question\n"
             "`quote`: Get an inspirational quote\n"
+            "\n"
+            "[DJ]\n"
+            "`play [url]`: Play music from a URL (YouTube, SoundCloud, etc.)\n"
+            "`pause`: Pause the current playback\n"
+            "`resume`: Resume the paused playback\n"
+            "`stop`: Stop the current playback\n"
+            "`volume [0-100]`: Set the volume of the playback (0-100)\n"
+            "`leave`: Disconnect from the voice channel\n"
         )
 
     # Coin flip
