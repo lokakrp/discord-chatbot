@@ -14,10 +14,13 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='?', intents=intents)
 
 # Load the DJ cog
+async def load_extensions():
+    await bot.load_extension('dj')
+
 @bot.event
 async def on_ready():
     print(f'{bot.user} is now running!')
-    bot.load_extension('dj')  # Load the DJ cog
+    await load_extensions()  # Load the DJ cog
 
 # Handle messages
 @bot.event

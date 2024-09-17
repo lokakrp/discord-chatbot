@@ -1,20 +1,18 @@
-import tempfile
 import discord
 from discord.ext import commands
 import yt_dlp as youtube_dl
+import tempfile
 import os
 
 class DJ(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
         self.ytdl_format_options = {
             'format': 'bestaudio/best',
             'noplaylist': True,
             'default_search': 'auto',
             'quiet': True,
         }
-
         self.ffmpeg_options = {
             'options': '-vn'
         }
@@ -118,5 +116,6 @@ class DJ(commands.Cog):
         else:
             await ctx.send("Volume must be between 0 and 100.")
 
+# Setup function for adding the DJ cog to the bot
 def setup(bot):
     bot.add_cog(DJ(bot))
