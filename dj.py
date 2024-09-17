@@ -19,16 +19,14 @@ class DJ(commands.Cog):
 
     @commands.command()
     async def play(self, ctx, url):
-        """
-        Command: play
-        Play music from a URL (e.g., YouTube, SoundCloud, Spotify).
-        Args:
-            ctx: The context in which the command is invoked.
-            url: The URL of the audio track to play.
-        """
+        """Play music from a URL (YouTube, SoundCloud, etc.)"""
         if ctx.voice_client is None:
-            await ctx.send("I need to be in a voice channel to play music.")
-            return
+            if ctx.author.voice:
+                channel = ctx.author.voice.channel
+                await channel.connect()
+            else:
+                await ctx.send("You are not connected to a voice channel.")
+                return
 
         voice_client = ctx.voice_client
 
@@ -40,13 +38,7 @@ class DJ(commands.Cog):
             await self.play_from_url(ctx, url)
 
     async def play_from_url(self, ctx, url):
-        """
-        Command: play (for regular URLs)
-        Play music from a regular URL (e.g., YouTube).
-        Args:
-            ctx: The context in which the command is invoked.
-            url: The URL of the audio track to play.
-        """
+        """Play music from a regular URL (e.g., YouTube)."""
         voice_client = ctx.voice_client
 
         with youtube_dl.YoutubeDL(self.ytdl_format_options) as ydl:
@@ -58,33 +50,15 @@ class DJ(commands.Cog):
         await ctx.send(f'Now playing: {info["title"]}')
 
     async def play_spotify(self, ctx, url):
-        """
-        Command: play (for Spotify URLs)
-        Play music from Spotify by downloading and streaming.
-        Args:
-            ctx: The context in which the command is invoked.
-            url: The URL of the Spotify track to play.
-        """
+        """Play music from Spotify by downloading and streaming."""
         await self.download_and_play(ctx, url)
 
     async def play_soundcloud(self, ctx, url):
-        """
-        Command: play (for SoundCloud URLs)
-        Play music from SoundCloud by downloading and streaming.
-        Args:
-            ctx: The context in which the command is invoked.
-            url: The URL of the SoundCloud track to play.
-        """
+        """Play music from SoundCloud by downloading and streaming."""
         await self.download_and_play(ctx, url)
 
     async def download_and_play(self, ctx, url):
-        """
-        Command: play (for general URLs)
-        Download and play music from a URL.
-        Args:
-            ctx: The context in which the command is invoked.
-            url: The URL of the audio track to download and play.
-        """
+        """Download and play music from a URL."""
         with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as temp_file:
             temp_file_path = temp_file.name
 
@@ -103,12 +77,7 @@ class DJ(commands.Cog):
 
     @commands.command()
     async def leave(self, ctx):
-        """
-        Command: leave
-        Leaves the voice channel.
-        Args:
-            ctx: The context in which the command is invoked.
-        """
+        """Leaves the voice channel."""
         if ctx.voice_client:
             await ctx.voice_client.disconnect()
             await ctx.send('Disconnected from voice channel.')
@@ -117,12 +86,7 @@ class DJ(commands.Cog):
 
     @commands.command()
     async def pause(self, ctx):
-        """
-        Command: pause
-        Pauses the current playback.
-        Args:
-            ctx: The context in which the command is invoked.
-        """
+        """Pauses the current playback."""
         if ctx.voice_client.is_playing():
             ctx.voice_client.pause()
             await ctx.send("Playback paused.")
@@ -131,12 +95,7 @@ class DJ(commands.Cog):
 
     @commands.command()
     async def resume(self, ctx):
-        """
-        Command: resume
-        Resumes the paused playback.
-        Args:
-            ctx: The context in which the command is invoked.
-        """
+        """Resumes the paused playback."""
         if ctx.voice_client.is_paused():
             ctx.voice_client.resume()
             await ctx.send("Playback resumed.")
@@ -145,12 +104,7 @@ class DJ(commands.Cog):
 
     @commands.command()
     async def stop(self, ctx):
-        """
-        Command: stop
-        Stops the current playback.
-        Args:
-            ctx: The context in which the command is invoked.
-        """
+        """Stops the current playback."""
         if ctx.voice_client.is_playing():
             ctx.voice_client.stop()
             await ctx.send("Playback stopped.")
@@ -159,13 +113,7 @@ class DJ(commands.Cog):
 
     @commands.command()
     async def volume(self, ctx, volume: int):
-        """
-        Command: volume
-        Sets the volume of the playback (0-100).
-        Args:
-            ctx: The context in which the command is invoked.
-            volume: The volume level to set (0-100).
-        """
+        """Sets the volume of the playback (0-100)."""
         if 0 <= volume <= 100:
             ctx.voice_client.source.volume = volume / 100
             await ctx.send(f"Volume set to {volume}%")

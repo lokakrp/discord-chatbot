@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import responses
 import configparser
+import asyncio
 
 # Read token from token.ini
 config = configparser.ConfigParser()
@@ -11,6 +12,7 @@ TOKEN = config['discord']['token'].strip()
 # Create a bot instance with the commands extension
 intents = discord.Intents.default()
 intents.message_content = True
+intents.voice_states = True  # Add voice states intent for audio features
 bot = commands.Bot(command_prefix='!', intents=intents)  # Changed prefix to '!'
 
 # Load the DJ cog
@@ -54,4 +56,7 @@ async def send_message(message, user_message, is_private):
         print(e)
 
 # Run the bot
-bot.run(TOKEN)
+async def main():
+    await bot.start(TOKEN)  # Replace 'TOKEN HERE' with your actual token
+
+asyncio.run(main())

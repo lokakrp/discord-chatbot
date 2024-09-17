@@ -1,1 +1,1 @@
-pip install discord discord.py[voice] yt-dlp spotify-dl
+pip install discord discord.py[voice] yt-dlp spotify-dl pynacl
