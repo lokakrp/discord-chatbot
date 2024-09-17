@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
-import responses
 import configparser
 import asyncio
+import responses
 
 # Read token from token.ini
 config = configparser.ConfigParser()
@@ -13,18 +13,17 @@ TOKEN = config['discord']['token'].strip()
 intents = discord.Intents.default()
 intents.message_content = True
 intents.voice_states = True  # Add voice states intent for audio features
-bot = commands.Bot(command_prefix='!', intents=intents)  # Changed prefix to '!'
+bot = commands.Bot(command_prefix='!', intents=intents)
 
 # Load the DJ cog
 async def load_extensions():
-    await bot.load_extension('dj')
+    await bot.load_extension('dj')  # This will await the load_extension coroutine
 
 @bot.event
 async def on_ready():
     print(f'{bot.user} is now running!')
-    await load_extensions()  # Load the DJ cog
+    await load_extensions()  # Ensure cog is loaded on ready
 
-# Handle messages
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
@@ -44,7 +43,9 @@ async def on_message(message):
         user_message = user_message[1:]
         await send_message(message, user_message, is_private=False)
 
-# Send messages with response handling
+    # Ensure commands are processed
+    await bot.process_commands(message)
+
 async def send_message(message, user_message, is_private):
     try:
         response = responses.get_response(user_message)
@@ -57,6 +58,6 @@ async def send_message(message, user_message, is_private):
 
 # Run the bot
 async def main():
-    await bot.start(TOKEN)  # Replace 'TOKEN HERE' with your actual token
+    await bot.start(TOKEN)
 
 asyncio.run(main())

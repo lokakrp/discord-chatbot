@@ -8,7 +8,7 @@ def get_response(message: str) -> str:
         return random.choice(["hiii!", "hello!!", "heyy!!!", "hi!"])
 
     # Help command
-    if p_message in ["!help", "help", "?"]:
+    if p_message == "help":
         return (
             "`Commands list:`\n"
             "[chatbot]\n"
@@ -32,8 +32,8 @@ def get_response(message: str) -> str:
         return f"🪙 You got {random.choice(['heads', 'tails'])}!"
 
     # Rock Paper Scissors (RPS)
-    if p_message.startswith("rps"):
-        user_choice = p_message.split()[1] if len(p_message.split()) > 1 else ""
+    if p_message.startswith("rps "):
+        user_choice = p_message.split(" ")[1]
         rps_choices = ["rock", "paper", "scissors"]
         
         if user_choice in rps_choices:
@@ -84,5 +84,5 @@ if __name__ == "__main__":
     print(get_response("rps rock"))       # Play rock-paper-scissors
     print(get_response("8ball"))          # Magic 8 ball response
     print(get_response("quote"))          # Inspirational quote
-    print(get_response("!help"))          # List of commands
+    print(get_response("help"))           # List of commands
     print(get_response("unknown"))        # Unknown command

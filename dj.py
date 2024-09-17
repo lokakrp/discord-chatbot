@@ -1,125 +1,54 @@
 import discord
 from discord.ext import commands
-import yt_dlp as youtube_dl
-import tempfile
-import os
+import yt_dlp
 
-class DJ(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-        self.ytdl_format_options = {
-            'format': 'bestaudio/best',
-            'noplaylist': True,
-            'default_search': 'auto',
-            'quiet': True,
-        }
-        self.ffmpeg_options = {
-            'options': '-vn'
-        }
+FFMPEG_OPTIONS = {'options': '-vn'}
+YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': True}
+
+class MusicBot(commands.Cog):
+    def __init__(self, client):
+        self.client = client
+        self.queue = []
 
     @commands.command()
-    async def play(self, ctx, url):
-        """Play music from a URL (YouTube, SoundCloud, etc.)"""
-        if ctx.voice_client is None:
-            if ctx.author.voice:
-                channel = ctx.author.voice.channel
-                await channel.connect()
-            else:
-                await ctx.send("You are not connected to a voice channel.")
-                return
-
-        voice_client = ctx.voice_client
-
-        if 'spotify.com' in url:
-            await self.play_spotify(ctx, url)
-        elif 'soundcloud.com' in url:
-            await self.play_soundcloud(ctx, url)
-        else:
-            await self.play_from_url(ctx, url)
-
-    async def play_from_url(self, ctx, url):
-        """Play music from a regular URL (e.g., YouTube)."""
-        voice_client = ctx.voice_client
-
-        with youtube_dl.YoutubeDL(self.ytdl_format_options) as ydl:
-            info = ydl.extract_info(url, download=False)
-            url2 = info['formats'][0]['url']
-
-        voice_client.stop()
-        voice_client.play(discord.FFmpegPCMAudio(url2, **self.ffmpeg_options))
-        await ctx.send(f'Now playing: {info["title"]}')
-
-    async def play_spotify(self, ctx, url):
-        """Play music from Spotify by downloading and streaming."""
-        await self.download_and_play(ctx, url)
-
-    async def play_soundcloud(self, ctx, url):
-        """Play music from SoundCloud by downloading and streaming."""
-        await self.download_and_play(ctx, url)
-
-    async def download_and_play(self, ctx, url):
-        """Download and play music from a URL."""
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as temp_file:
-            temp_file_path = temp_file.name
-
-        # Download the track
-        with youtube_dl.YoutubeDL({'format': 'bestaudio/best', 'outtmpl': temp_file_path}) as ydl:
-            ydl.download([url])
-
-        voice_client = ctx.voice_client
-
-        voice_client.stop()
-        voice_client.play(discord.FFmpegPCMAudio(temp_file_path, **self.ffmpeg_options))
-        await ctx.send(f'Now playing from: {url}')
-
-        # Clean up the temporary file
-        os.remove(temp_file_path)
+    async def play(self, ctx, *, search):
+        voice_channel = ctx.author.voice.channel if ctx.author.voice else None
+        if not voice_channel:
+            return await ctx.send("You're not in a voice channel!")
+        if not ctx.voice_client:
+            await voice_channel.connect()
+        async with ctx.typing():
+            with yt_dlp.YoutubeDL(YDL_OPTIONS) as ydl:
+                info = ydl.extract_info(f"ytsearch:{search}", download=False)
+                if 'entries' in info:
+                    info = info['entries'][0]
+                url = info['url']
+                title = info['title']
+                self.queue.append((url, title))
+                await ctx.send(f'Added to queue: **{title}**')
+        if not ctx.voice_client.is_playing():
+            await self.play_next(ctx)
+    
+    async def play_next(self, ctx):
+        if self.queue:
+            url, title = self.queue.pop(0)
+            source = await discord.FFmpegOpusAudio.from_probe(url, **FFMPEG_OPTIONS)
+            ctx.voice_client.play(source, after=lambda _: self.client.loop.create_task(self.play_next(ctx)))
+            await ctx.send(f'Now playing: **{title}**')
+        elif not ctx.voice_client.is_playing():
+            await ctx.send("Queue is empty!")
+    
+    @commands.command()
+    async def skip(self, ctx):
+        if ctx.voice_client and ctx.voice_client.is_playing():
+            ctx.voice_client.stop()
+            await ctx.send("Skipped ⏭")
 
     @commands.command()
     async def leave(self, ctx):
-        """Leaves the voice channel."""
         if ctx.voice_client:
             await ctx.voice_client.disconnect()
-            await ctx.send('Disconnected from voice channel.')
-        else:
-            await ctx.send("I am not connected to any voice channel.")
+            await ctx.send("Disconnected from the voice channel.")
 
-    @commands.command()
-    async def pause(self, ctx):
-        """Pauses the current playback."""
-        if ctx.voice_client.is_playing():
-            ctx.voice_client.pause()
-            await ctx.send("Playback paused.")
-        else:
-            await ctx.send("No audio is currently playing.")
-
-    @commands.command()
-    async def resume(self, ctx):
-        """Resumes the paused playback."""
-        if ctx.voice_client.is_paused():
-            ctx.voice_client.resume()
-            await ctx.send("Playback resumed.")
-        else:
-            await ctx.send("Audio is not paused.")
-
-    @commands.command()
-    async def stop(self, ctx):
-        """Stops the current playback."""
-        if ctx.voice_client.is_playing():
-            ctx.voice_client.stop()
-            await ctx.send("Playback stopped.")
-        else:
-            await ctx.send("No audio is currently playing.")
-
-    @commands.command()
-    async def volume(self, ctx, volume: int):
-        """Sets the volume of the playback (0-100)."""
-        if 0 <= volume <= 100:
-            ctx.voice_client.source.volume = volume / 100
-            await ctx.send(f"Volume set to {volume}%")
-        else:
-            await ctx.send("Volume must be between 0 and 100.")
-
-# Properly setup the cog
-async def setup(bot):
-    await bot.add_cog(DJ(bot))
+async def setup(client):
+    await client.add_cog(MusicBot(client))  # Ensure this is awaited when used
