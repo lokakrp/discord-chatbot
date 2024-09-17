@@ -1,4 +1,5 @@
 import discord
+from discord.ext import commands
 import responses
 import configparser
 
@@ -7,6 +8,36 @@ config = configparser.ConfigParser()
 config.read('token.ini')
 TOKEN = config['discord']['token'].strip()
 
+# Create a bot instance with the commands extension
+intents = discord.Intents.default()
+intents.message_content = True
+bot = commands.Bot(command_prefix='?', intents=intents)
+
+# Load the DJ cog
+@bot.event
+async def on_ready():
+    print(f'{bot.user} is now running!')
+    bot.load_extension('dj')  # Load the DJ cog
+
+# Handle messages
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return
+    
+    username = str(message.author)
+    user_message = str(message.content)
+    channel = str(message.channel)
+
+    print(f'{username} said: "{user_message}" ({channel})')
+
+    if user_message.startswith("?"):
+        user_message = user_message[1:]
+        await send_message(message, user_message, is_private=True)
+    else:
+        await send_message(message, user_message, is_private=False)
+
+# Send messages with response handling
 async def send_message(message, user_message, is_private):
     try:
         response = responses.get_response(user_message)
@@ -17,30 +48,5 @@ async def send_message(message, user_message, is_private):
     except Exception as e:
         print(e)
 
-def run_discord_bot():
-    intents = discord.Intents.default()
-    intents.message_content = True
-    client = discord.Client(intents=intents)
-
-    @client.event
-    async def on_ready():
-        print(f'{client.user} is now running!')
-
-    @client.event
-    async def on_message(message):
-        if message.author == client.user:
-            return
-        
-        username = str(message.author)
-        user_message = str(message.content)
-        channel = str(message.channel)
-
-        print(f'{username} said: "{user_message}" ({channel})')
-
-        if user_message.startswith("?"):
-            user_message = user_message[1:]
-            await send_message(message, user_message, is_private=True)
-        else:
-            await send_message(message, user_message, is_private=False)
-
-    client.run(TOKEN)
+# Run the bot
+bot.run(TOKEN)
