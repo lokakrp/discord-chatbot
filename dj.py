@@ -116,6 +116,7 @@ class DJ(commands.Cog):
         else:
             await ctx.send("Volume must be between 0 and 100.")
 
-# Setup function for adding the DJ cog to the bot
-def setup(bot):
-    bot.add_cog(DJ(bot))
+# Properly setup the cog
+async def setup(bot):
+    await bot.add_cog(DJ(bot))
+
