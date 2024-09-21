@@ -23,7 +23,7 @@ class MusicBot(commands.Cog):
         voice_channel = interaction.user.voice.channel if interaction.user.voice else None
         
         if not voice_channel:
-            return await interaction.response.send_message("uou're not in a voice channel!!")
+            return await interaction.response.send_message("you're not in a voice channel!!")
 
         if not interaction.guild.voice_client:
             await voice_channel.connect()

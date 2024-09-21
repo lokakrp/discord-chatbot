@@ -1,0 +1,36 @@
+{
+    "users": {
+        "1226872404232638534": {
+            "name": "loka",
+            "birthday": "2005-11-28",
+            "age": 18,
+            "facts": ["likes history", "is super awesome"],
+            "likes_user": true,
+            "attitude": "very excited"
+        },
+        "917895573141598208": {
+            "name": "avery",
+            "birthday": "2006-06-11",
+            "age": 18,
+            "facts": ["loves cats", "has a grey cat called oliver", "a black cat called jax"],
+            "likes_user": true,
+            "attitude": "shy"
+        },
+        "613887949364527145": {
+            "name": "chris",
+            "birthday": "2006-08-16",
+            "age": 18,
+            "facts": ["works at five guys", "loves chocolate buttons","is a proud black man"],
+            "likes_user": false,
+            "attitude": "shy"
+        },
+        "388034305798045696": {
+            "name": "ellis",
+            "birthday": "2005-09-16",
+            "age": 19,
+            "facts": ["", "",""],
+            "likes_user": true,
+            "attitude": "shy"
+        }
+    }
+}
