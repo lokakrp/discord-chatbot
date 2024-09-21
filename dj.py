@@ -18,12 +18,12 @@ class MusicBot(commands.Cog):
         self.queue = []
         self.currently_playing = None  # Now playing
 
-    @discord.app_commands.command(name="play", description="Play a song from YouTube or SoundCloud")
+    @discord.app_commands.command(name="play", description="play a song from uoutube or soundcloud")
     async def play(self, interaction: discord.Interaction, search: str):
         voice_channel = interaction.user.voice.channel if interaction.user.voice else None
         
         if not voice_channel:
-            return await interaction.response.send_message("You're not in a voice channel!")
+            return await interaction.response.send_message("uou're not in a voice channel!!")
 
         if not interaction.guild.voice_client:
             await voice_channel.connect()
@@ -40,14 +40,14 @@ class MusicBot(commands.Cog):
                 title = info['title']
 
             self.queue.append((url, title))
-            await interaction.followup.send(f'Added to queue: **{title}**')
+            await interaction.followup.send(f'added to queue: **{title}**')
 
             if not interaction.guild.voice_client.is_playing():
                 await self.play_next(interaction)
         except yt_dlp.utils.YoutubeDLError as e:
             await interaction.followup.send(f"YT-DLP Error: {str(e)}")
         except Exception as e:
-            await interaction.followup.send(f"An error occurred: {str(e)}")
+            await interaction.followup.send(f"an error occurred: {str(e)}")
 
     async def play_next(self, interaction: discord.Interaction):
         if self.queue:
@@ -59,51 +59,51 @@ class MusicBot(commands.Cog):
             await interaction.followup.send(f'Now playing: **{title}**')
         else:
             self.currently_playing = None
-            await interaction.followup.send("Queue is empty!")
+            await interaction.followup.send("queue is empty!")
 
-    @discord.app_commands.command(name="skip", description="Skip the current song")
+    @discord.app_commands.command(name="skip", description="skip the current song")
     async def skip(self, interaction: discord.Interaction):
         if interaction.guild.voice_client and interaction.guild.voice_client.is_playing():
             interaction.guild.voice_client.stop()
-            await interaction.response.send_message("Skipped ⏭")
+            await interaction.response.send_message("skipped current song!!")
         else:
-            await interaction.response.send_message("No song is currently playing!")
+            await interaction.response.send_message("no song is currently playing!")
 
-    @discord.app_commands.command(name="leave", description="Disconnect from the voice channel")
+    @discord.app_commands.command(name="leave", description="disconnect from the voice channel")
     async def leave(self, interaction: discord.Interaction):
         if interaction.guild.voice_client:
             await interaction.guild.voice_client.disconnect()
-            await interaction.response.send_message("Disconnected from the voice channel.")
+            await interaction.response.send_message("disconnected from the voice channel.")
         else:
-            await interaction.response.send_message("I'm not in a voice channel!")
+            await interaction.response.send_message("i'm not in a voice channel!")
 
-    @discord.app_commands.command(name="np", description="Show the currently playing song")
+    @discord.app_commands.command(name="np", description="show the currently playing song")
     async def now_playing(self, interaction: discord.Interaction):
         if self.currently_playing:
-            await interaction.response.send_message(f'Currently playing: **{self.currently_playing}**')
+            await interaction.response.send_message(f'currently playing: **{self.currently_playing}**')
         else:
-            await interaction.response.send_message("No song is currently playing.")
+            await interaction.response.send_message("no song is currently playing.")
 
-    @discord.app_commands.command(name="queue", description="Show the current song queue")
+    @discord.app_commands.command(name="queue", description="show the current song queue")
     async def queue(self, interaction: discord.Interaction):
         if self.queue:
             queue_list = '\n'.join([f"{i + 1}. {title}" for i, (_, title) in enumerate(self.queue)])
-            await interaction.response.send_message(f'Current queue:\n{queue_list}')
+            await interaction.response.send_message(f'current queue:\n{queue_list}')
         else:
-            await interaction.response.send_message("The queue is empty.")
+            await interaction.response.send_message("the queue is empty.")
 
-    @discord.app_commands.command(name="remove", description="Remove a song from the queue by its position")
+    @discord.app_commands.command(name="remove", description="remove a song from the queue by its position")
     async def remove(self, interaction: discord.Interaction, index: int):
         if 0 < index <= len(self.queue):
             removed_song = self.queue.pop(index - 1)[1]
-            await interaction.response.send_message(f'Removed **{removed_song}** from the queue.')
+            await interaction.response.send_message(f'removed **{removed_song}** from the queue.')
         else:
-            await interaction.response.send_message(f'Invalid index! Please provide a number between 1 and {len(self.queue)}.')
+            await interaction.response.send_message(f'invalid index! please provide a number between 1 and {len(self.queue)}.')
 
-    @discord.app_commands.command(name="clear", description="Clear the entire queue except for the currently playing song")
+    @discord.app_commands.command(name="clear", description="clear the entire queue except for the currently playing song")
     async def clear(self, interaction: discord.Interaction):
         self.queue.clear()
-        await interaction.response.send_message("The queue has been cleared except for the currently playing song.")
+        await interaction.response.send_message("the queue has been cleared except for the currently playing song.")
 
 async def setup(client):
     await client.add_cog(MusicBot(client))

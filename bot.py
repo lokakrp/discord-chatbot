@@ -2,23 +2,23 @@ import discord
 from discord.ext import commands
 import configparser
 import asyncio
-import ai  # Import your AIChatbot class
+import ai  
 
-# Read token and API key from token.ini
+# Reads token and api key
 config = configparser.ConfigParser()
 config.read('token.ini')
 TOKEN = config['discord']['token'].strip()
 COHERE_API_KEY = config['cohere']['api_key'].strip()
 
-# Initialize the bot with necessary intents
+# Initialise bot intents
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-# Initialize Cohere AI Chatbot with the API key from token.ini
+# Initalise chatbot
 ai_chatbot = ai.AIChatbot(api_key=COHERE_API_KEY)
 
-# Load the DJ cog for music commands
+# Loads DJ module
 async def load_extensions():
     await bot.load_extension('dj')
 
