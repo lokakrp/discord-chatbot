@@ -1,0 +1,19 @@
+{
+    "general": {
+        "facts": [
+            "the earth revolves around the sun",
+            "water freezes at 0 degrees Celsius"
+        ]
+    },
+    "personal": {
+        "lessons": [
+            "people don't like it when you call them fat",
+            "people enjoy compliments",
+            "being friendly makes conversations easier"
+        ],
+        "feelings": [
+            "i don't like people being mean to me",
+            "i like when people talk about cats"
+        ]
+    }
+}
