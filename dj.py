@@ -19,6 +19,7 @@ class MusicBot(commands.Cog):
         self.currently_playing = None  # Now playing
 
     @discord.app_commands.command(name="play", description="play a song from uoutube or soundcloud")
+    @discord.app_commands.command(name="play", description="play a song from youtube or soundcloud")
     async def play(self, interaction: discord.Interaction, search: str):
         voice_channel = interaction.user.voice.channel if interaction.user.voice else None
         
