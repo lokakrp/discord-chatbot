@@ -1,5 +1,5 @@
 [python installs]
-pip install discord discord.py[voice] cohere yt-dlp spotify-dl pynacl 
+pip install discord discord.py[voice] cohere yt-dlp spotify-dl pynacl speechrecognition pyaudio pyttsx3 moviepy Pillow
 
 [FFmpeg install]
 

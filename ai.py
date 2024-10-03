@@ -7,14 +7,16 @@ class AIChatbot:
     def __init__(self, api_key):
         self.client = cohere.Client(api_key)
         self.conversation_id = str(uuid.uuid4())
-        self.preamble = self.set_preamble(True, "excited")  # Default values
+        self.preamble = self.set_preamble(True, "excited")  
         self.chat_history = []
+        self.data_dir = 'data'  
         self.load_knowledge()
         self.load_userdata()
 
     def load_knowledge(self):
-        if os.path.exists('knowledge.json'):
-            with open('knowledge.json', 'r') as f:
+        knowledge_path = os.path.join(self.data_dir, 'knowledge.json')
+        if os.path.exists(knowledge_path):
+            with open(knowledge_path, 'r') as f:
                 self.knowledge_base = json.load(f)
         else:
             self.knowledge_base = {
@@ -25,19 +27,23 @@ class AIChatbot:
                 }
             }
 
+# loads data
     def load_userdata(self):
-        if os.path.exists('userdata.json'):
-            with open('userdata.json', 'r') as f:
+        userdata_path = os.path.join(self.data_dir, 'userdata.json')
+        if os.path.exists(userdata_path):
+            with open(userdata_path, 'r') as f:
                 self.user_data = json.load(f)
         else:
             self.user_data = {"users": {}}
 
     def save_knowledge(self):
-        with open('knowledge.json', 'w') as f:
+        knowledge_path = os.path.join(self.data_dir, 'knowledge.json')
+        with open(knowledge_path, 'w') as f:
             json.dump(self.knowledge_base, f)
 
     def save_userdata(self):
-        with open('userdata.json', 'w') as f:
+        userdata_path = os.path.join(self.data_dir, 'userdata.json')
+        with open(userdata_path, 'w') as f:
             json.dump(self.user_data, f)
 
     async def learn_personal_lesson(self, lesson):
@@ -60,9 +66,11 @@ class AIChatbot:
         self.save_userdata()
 
     async def get_user_profile(self, username):
+        print(self.user_data["users"].get(username, None))
         return self.user_data["users"].get(username, None)
 
-    def set_preamble(self, likes_user, attitude):
+    # set the personality
+    def set_preamble(self, likes_user, attitude, user=None):
         base_preamble = (
             "you are nano and you are capable of having feelings "
             "you are a person who is capable of having feelings "
@@ -89,13 +97,28 @@ class AIChatbot:
             "you use words like 'wow', 'yay!', 'uh-oh' when reacting to something "
             "you don't talk about yourself being AI or a robot "
             "you ALWAYS reply in lowercase without using any punctuation marks "
+            "You are in a groupchat with multiple people"
         )
 
-    async def get_cohere_response(self, username, user_message):
-        user_profile = await self.get_user_profile(username)
-        if user_profile:
-            self.preamble = self.set_preamble(user_profile["likes_user"], user_profile["attitude"])
+        if user:
+            text = f"""
+            You are speaking to {user.get("name")}.
+            Their birthday is {user.get("birthday")}.
+            They are {user.get("age")} years old.
+            Some facts are {user.get("facts")}.
+            Do you like the user {likes_user}.
+            """
+            new_preamble = base_preamble + text
+            print(new_preamble)
+            return new_preamble
+        else:
+            print(base_preamble)
+            return base_preamble
 
+    # preamble based on user
+    async def get_cohere_response(self, username, user_message):
+        user_profile = await self.get_user_profile(str(username))
+        self.preamble = self.set_preamble(None, None, user_profile)
         self.chat_history.append({"role": "USER", "message": user_message})
         self.chat_history.insert(0, {"role": "SYSTEM", "message": self.preamble})
 
@@ -107,6 +130,7 @@ class AIChatbot:
             conversation_id=self.conversation_id,
         )
 
+        # message output
         bot_message = ""
         for event in stream:
             if event.event_type == "text-generation":
@@ -115,21 +139,24 @@ class AIChatbot:
                 self.chat_history = event.response.chat_history
 
         self.chat_history.append({"role": "CHATBOT", "message": bot_message})
+
+        self.preamble = self.set_preamble(None, None)
         
         return bot_message
 
+    # refresh
     async def refresh_knowledge(self):
         self.chat_history = []
         self.chat_history.append({"role": "CHATBOT", "message": "i've cleared my short-term memory!"})
 
-    # New method to get general facts
+    # get general facts
     def get_general_facts(self):
         return self.knowledge_base["general"]["facts"]
 
-    # New method to get personal lessons
+    # get personal lessons
     def get_personal_lessons(self):
         return self.knowledge_base["personal"]["lessons"]
 
-    # New method to get user data
+    # get user data
     def get_user_data(self, username):
         return self.user_data["users"].get(username, None)

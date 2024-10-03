@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import yt_dlp
 
+# lib options
 FFMPEG_OPTIONS = {
     'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
     'options': '-vn'
@@ -9,9 +10,10 @@ FFMPEG_OPTIONS = {
 YDL_OPTIONS = {
     'format': 'bestaudio',
     'noplaylist': True,
-    'extract_flat': True  # Use this for faster extraction, can help with SoundCloud
+    'extract_flat': True 
 }
 
+# establish cog
 class MusicBot(commands.Cog):
     def __init__(self, client):
         self.client = client
@@ -34,7 +36,7 @@ class MusicBot(commands.Cog):
             with yt_dlp.YoutubeDL(YDL_OPTIONS) as ydl:
                 info = ydl.extract_info(search, download=False)
                 if 'entries' in info:
-                    info = info['entries'][0]  # Get the first entry if it's a playlist
+                    info = info['entries'][0] 
 
                 url = info['url']
                 title = info['title']
@@ -52,7 +54,7 @@ class MusicBot(commands.Cog):
     async def play_next(self, interaction: discord.Interaction):
         if self.queue:
             url, title = self.queue.pop(0)
-            self.currently_playing = title  # Set currently playing song
+            self.currently_playing = title  # sets current song
             source = discord.FFmpegPCMAudio(url, **FFMPEG_OPTIONS)
 
             interaction.guild.voice_client.play(source, after=lambda _: self.client.loop.create_task(self.play_next(interaction)))
@@ -61,6 +63,8 @@ class MusicBot(commands.Cog):
             self.currently_playing = None
             await interaction.followup.send("queue is empty!")
 
+
+    # commands
     @discord.app_commands.command(name="skip", description="skip the current song")
     async def skip(self, interaction: discord.Interaction):
         if interaction.guild.voice_client and interaction.guild.voice_client.is_playing():

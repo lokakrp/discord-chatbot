@@ -4,7 +4,8 @@
             "name": "loka",
             "birthday": "2005-11-28",
             "age": 18,
-            "facts": ["likes history", "is super awesome"],
+            "Male": 0,
+            "facts": ["likes history", "is super awesome", "made nano"],
             "likes_user": true,
             "attitude": "very excited"
         },
@@ -12,14 +13,16 @@
             "name": "avery",
             "birthday": "2006-06-11",
             "age": 18,
+            "Male": 0,
             "facts": ["loves cats", "has a grey cat called oliver", "a black cat called jax"],
             "likes_user": true,
-            "attitude": "shy"
+            "attitude": "excited"
         },
         "613887949364527145": {
             "name": "chris",
             "birthday": "2006-08-16",
             "age": 18,
+            "Male": 1,
             "facts": ["works at five guys", "loves chocolate buttons","is a proud black man"],
             "likes_user": false,
             "attitude": "shy"
@@ -28,9 +31,28 @@
             "name": "ellis",
             "birthday": "2005-09-16",
             "age": 19,
+            "Male": 1,
             "facts": ["", "",""],
             "likes_user": true,
             "attitude": "shy"
+        },
+        "343811679072813057": {
+            "name": "mari",
+            "birthday": "2003-09-22 ",
+            "age": 19,
+            "Male": 0,
+            "facts": ["she is from finland","she likes blur", "she likes the smiths"],
+            "likes_user": true,
+            "attitude": "shy"
+        },
+        "389709064235515906": {
+            "name": "freddie",
+            "birthday": "2006-04-24 ",
+            "age": 18,
+            "Male": 1,
+            "facts": ["likes monkeys","likes the anime one piece", "has blonde hair"],
+            "likes_user": true,
+            "attitude": "excited"
         }
     }
 }
